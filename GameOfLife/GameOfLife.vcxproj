@@ -84,10 +84,16 @@
     <CudaCompile Include="kernel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GLBuffer.h" />
+    <ClInclude Include="GLManager.h" />
+    <ClInclude Include="GLShader.h" />
     <ClInclude Include="GLWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\thirdparty\glad\src\glad.c" />
+    <ClCompile Include="GLBuffer.cpp" />
+    <ClCompile Include="GLManager.cpp" />
+    <ClCompile Include="GLShader.cpp" />
     <ClCompile Include="GLWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

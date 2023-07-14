@@ -3,6 +3,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "GLBuffer.h"
+#include "GLShader.h"
+
 /* \brief Class to create and OpenGL window.
  */
 class GLWindow
@@ -20,6 +23,9 @@ private:
 	void LoadGLAD();
 
 	GLFWwindow * _window;
+
+	GLBuffer * _buffer;
+	GLShader * _shader;
 
 	unsigned int _width;
 	unsigned int _height;
