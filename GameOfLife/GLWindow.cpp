@@ -4,18 +4,22 @@
 
 const char* vertexShaderSource =
 "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
+"layout (location = 0) in vec3 shapeCoords;\n"
+"layout (location = 1) in float color;\n"
+"out vec3 passthrough;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   passthrough = vec3(color, color, color);\n"
+"   gl_Position = vec4(shapeCoords.x, shapeCoords.y, shapeCoords.z, 1.0f);\n"
 "}\0";
 
 const char* fragmentShaderSource =
 "#version 330 core\n"
+"in vec3 passthrough;\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"    FragColor = vec4(passthrough, 1.0f);\n"
 "}\0";
 
 GLWindow::GLWindow(unsigned int width, unsigned int height, unsigned int glVersionMajor, unsigned int glVersionMinor) : _window(NULL),
@@ -29,6 +33,11 @@ GLWindow::GLWindow(unsigned int width, unsigned int height, unsigned int glVersi
          0.0f,  0.5f, 0.0f,
     };
 
+    float color[] = 
+    {
+        1.0f, 1.0f, 1.0f
+    };
+
     SetupWindow(glVersionMajor, glVersionMinor);
     LoadGLAD();
 
@@ -37,9 +46,13 @@ GLWindow::GLWindow(unsigned int width, unsigned int height, unsigned int glVersi
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     _shader = new GLShader(vertexShaderSource, fragmentShaderSource);
+    
     _buffer = new GLBuffer();
+    _buffer->AddAttributeBuffer(0, 3);
+    _buffer->AddAttributeBuffer(1, 1);
 
-    _buffer->SetBufferData(triangle, sizeof(triangle));
+    _buffer->SetBufferData(0, triangle, sizeof(triangle));
+    _buffer->SetBufferData(1, &color,   sizeof(color));
 }
 
 GLWindow::~GLWindow()
@@ -90,10 +103,10 @@ void GLWindow::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    _buffer->BindBuffer();
-
     _shader->UseProgram();
 
+    _buffer->BindBuffer();
+    
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glfwSwapBuffers(_window);
