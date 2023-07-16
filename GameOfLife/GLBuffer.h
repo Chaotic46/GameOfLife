@@ -17,6 +17,8 @@ public:
 
 	void SetBufferData(unsigned int index, void * data, size_t dataSize);
 
+	GLuint GetBuffer(unsigned int index) { return _vbo[index];  }
+
 private:
 	GLuint _vao;
 	std::vector<GLuint> _vbo;

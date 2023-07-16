@@ -28,7 +28,7 @@ const char* fragmentShaderSource =
 GLWindow::GLWindow(unsigned int width, unsigned int height, unsigned int glVersionMajor, unsigned int glVersionMinor) : _window(NULL),
                                                                                                                         _width(width),
                                                                                                                         _height(height),
-                                                                                                                        _numElements((NUM_SQUARES_PER_AXIS + 1)* (NUM_SQUARES_PER_AXIS + 1) * 2) // Multiply by 2 since we need 2 triangles to make a square
+                                                                                                                        _numElements((NUM_SQUARES_PER_AXIS + 2) * (NUM_SQUARES_PER_AXIS + 2) * 2) // Multiply by 2 since we need 2 triangles to make a square
                                                                                                                                                                                                  // Add 2 to each NUM_SQUARES_PER_AXIS since we need to buffer the screen for CUDA
 {
     SetupWindow(glVersionMajor, glVersionMinor);
@@ -48,6 +48,8 @@ GLWindow::GLWindow(unsigned int width, unsigned int height, unsigned int glVersi
     _buffer->SetBufferData(1, NULL, _numElements * sizeof(TriangleColor));
 
     InitializeLife();
+
+    _engine = new GameOfLifeEngine(_buffer->GetBuffer(1));
 }
 
 GLWindow::~GLWindow()
@@ -131,7 +133,7 @@ void GLWindow::SetupWindow(unsigned int glVersionMajor, unsigned int glVersionMi
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glVersionMinor);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    if (!(_window = glfwCreateWindow(_width, _height, "LearnOpenGL", NULL, NULL)))
+    if (!(_window = glfwCreateWindow(_width, _height, "Game of Life", NULL, NULL)))
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -162,6 +164,8 @@ void GLWindow::Render()
 
     _buffer->BindBuffer();
     
+    _engine->Update();
+
     glDrawArrays(GL_TRIANGLES, 0, _numElements * 3); // Multiple the total number of elements by 3 since we have 3 vertices per triangle
 
     glfwSwapBuffers(_window);

@@ -1,5 +1,5 @@
 #include "GLWindow.h"
-
+#include "windows.h"
 #include "GameDefs.h"
 
 int main()
@@ -9,6 +9,7 @@ int main()
     while (!shader.ShouldWindowClose())
     {
         shader.Render();
+        Sleep(100);
     }
 
     return 0;

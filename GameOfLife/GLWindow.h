@@ -6,6 +6,8 @@
 #include "GLBuffer.h"
 #include "GLShader.h"
 
+#include "GameOfLifeEngine.cuh"
+
 /* \brief Class to create and OpenGL window.
  */
 class GLWindow
@@ -48,6 +50,8 @@ private:
 
 	GLBuffer * _buffer;
 	GLShader * _shader;
+
+	GameOfLifeEngine * _engine;
 
 	unsigned int _width;
 	unsigned int _height;

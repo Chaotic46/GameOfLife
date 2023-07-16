@@ -1,23 +1,35 @@
 #include "GameOfLifeEngine.cuh"
 
-#include <cuda_runtime.h>
-#include <device_launch_parameters.h>
+
+
+#include "GameDefs.h"
+
 
 __global__ void DetermineIfAlive(float * ptr)
 {
-	int tIdx = threadIdx.x + 801;
+	int numVerticesPerSquare = 6;
+	int numSquaresPerRow     = (NUM_SQUARES_PER_AXIS + 2) * 2;
+	int numVerticesPerRow    = numSquaresPerRow * numVerticesPerSquare;
+	int tIdx                 = (threadIdx.x  + blockIdx.x * blockDim.x) * numVerticesPerSquare + numVerticesPerRow + numVerticesPerSquare;
 
-	unsigned int count = ptr[tIdx - 1]   + ptr[tIdx + 1]   +
-                         ptr[tIdx - 800] + ptr[tIdx + 800] +
-                         ptr[tIdx - 799] + ptr[tIdx - 801] +
-                         ptr[tIdx + 799] + ptr[tIdx + 801];
+	unsigned int count = ptr[tIdx - numVerticesPerSquare]                     + ptr[tIdx + numVerticesPerSquare]                     +
+                         ptr[tIdx - numVerticesPerRow]                        + ptr[tIdx + numVerticesPerRow]                        +
+                         ptr[tIdx - numVerticesPerRow - numVerticesPerSquare] + ptr[tIdx - numVerticesPerRow + numVerticesPerSquare] +
+                         ptr[tIdx + numVerticesPerRow - numVerticesPerSquare] + ptr[tIdx + numVerticesPerRow + numVerticesPerSquare];
 
-	ptr[tIdx] = count == 2 || count == 3 ? 1.0f : 0.0f;
+	float alive = count == 2 || count == 3 ? 1.0f : 0.0f;
+	__syncthreads();
+	ptr[tIdx] = alive;
+	ptr[tIdx + 1] = alive;
+	ptr[tIdx + 2] = alive;
+	ptr[tIdx + 3] = alive;
+	ptr[tIdx + 4] = alive;
+	ptr[tIdx + 5] = alive;
 }
 
-GameOfLifeEngine::GameOfLifeEngine()
+GameOfLifeEngine::GameOfLifeEngine(unsigned int vbo)
 {
-	
+	cudaGraphicsGLRegisterBuffer(&resource, vbo, cudaGraphicsRegisterFlagsNone);
 }
 
 GameOfLifeEngine::~GameOfLifeEngine()
@@ -34,7 +46,7 @@ void GameOfLifeEngine::Update()
 
 	cudaGraphicsResourceGetMappedPointer((void**)&devPtr, &size, resource);
 
-	DetermineIfAlive<<<1, 1>>>(devPtr);
+	DetermineIfAlive<<<NUM_SQUARES_PER_AXIS, NUM_SQUARES_PER_AXIS>>>(devPtr);
 
 	cudaGraphicsUnmapResources(1, &resource);
 }
