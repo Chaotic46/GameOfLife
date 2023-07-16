@@ -81,9 +81,11 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="GameOfLifeEngine.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameDefs.h" />
+    <ClInclude Include="GameOfLifeEngine.cuh" />
     <ClInclude Include="GLBuffer.h" />
     <ClInclude Include="GLManager.h" />
     <ClInclude Include="GLShader.h" />
@@ -95,6 +97,7 @@
     <ClCompile Include="GLManager.cpp" />
     <ClCompile Include="GLShader.cpp" />
     <ClCompile Include="GLWindow.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
